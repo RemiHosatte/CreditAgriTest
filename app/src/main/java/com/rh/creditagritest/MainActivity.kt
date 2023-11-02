@@ -65,7 +65,9 @@ fun MyAppNavHost(
 
             val idAccount = backStackEntry.arguments?.getString("idAccount")
             if (!idAccount.isNullOrEmpty()) {
-                AccountScreen(idAccount, parentViewModel)
+                AccountScreen(idAccount, parentViewModel) {
+                    navController.navigateUp()
+                }
             } else {
                 navController.navigateUp()
                 //Set error

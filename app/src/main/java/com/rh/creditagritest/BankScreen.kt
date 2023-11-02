@@ -161,7 +161,7 @@ private fun BankItem(item: ExpandItem, onAccountClick: (account: Accounts) -> Un
                 fontWeight = FontWeight.Bold
             )
             val sumOfAllAccounts =
-                String.format("%.2f", item.bank.accounts.sumOf { it.balance })
+                String.format("%.2f", item.bank.accounts.sumOf { it.balance }) + " €"
             Text(
                 text = sumOfAllAccounts,
                 modifier = Modifier.weight(1f),
@@ -204,7 +204,7 @@ private fun AccountItem(account: Accounts, onAccountClick: (account: Accounts) -
                 .weight(1f),
         )
         Text(
-            text = account.balance.toString(),
+            text = account.balance.toString() + " €",
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End,
             color = Color.Gray
