@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,52 +49,51 @@ fun AccountScreen(
         onNavigateBack()
         return
     }
-    Surface() {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+    ) {
         Column {
 
-            Row(
-                Modifier
-                    .wrapContentHeight()
-                    .height(50.dp)
-                    .fillMaxWidth()
-                    .background(Color.Gray),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
+
+            TopAppBar(title = {
+                Text(
+                    text = stringResource(id = R.string.my_account),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 16.dp),
+                )
+            }, navigationIcon = {
+                Icon(imageVector = Icons.Default.ArrowBack,
                     contentDescription = "icon_back",
                     modifier = Modifier
                         .clickable { onNavigateBack() }
                         .fillMaxHeight()
                         .padding(start = 16.dp)
-                        .width(25.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-                Text(
-                    text = stringResource(id = R.string.my_account),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .padding(start = 16.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            }
+                        .width(25.dp))
+            }, colors = TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer //Add your own color here, just to clarify.
+            )
+            )
 
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color.LightGray)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .padding(top = 50.dp, bottom = 25.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = String.format("%.2f", accountDetails.balance) + " €",
-                    style = MaterialTheme.typography.displayMedium
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
 
                 Text(
                     text = accountDetails.label,
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(top = 25.dp)
+                    modifier = Modifier.padding(top = 25.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+
+
                 )
             }
             val sortedOperations = accountDetails?.operations.orEmpty()

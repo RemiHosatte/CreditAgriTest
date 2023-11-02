@@ -67,7 +67,7 @@ fun BankScreen(
     }
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.LightGray,
+        color = MaterialTheme.colorScheme.primaryContainer,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -76,8 +76,8 @@ fun BankScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 50.dp, start = 16.dp, end = 16.dp),
-
-                )
+                color = MaterialTheme.colorScheme.onTertiaryContainer
+            )
 
 
             if (apiState.equals(APIState.LOADING)) {
@@ -121,12 +121,11 @@ fun BankList(listBanks: List<Banks>, onAccountClick: (account: Accounts) -> Unit
         item {
             Text(
                 text = stringResource(R.string.credit_agricole),
-                color = MaterialTheme.colorScheme.secondary,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
                 modifier = Modifier
                     .height(50.dp)
                     .wrapContentHeight(align = CenterVertically)
-                    .padding(start = 16.dp, end = 16.dp),
-                textAlign = TextAlign.Center
+                    .padding(start = 16.dp, end = 16.dp), textAlign = TextAlign.Center
 
             )
         }
@@ -141,8 +140,7 @@ fun BankList(listBanks: List<Banks>, onAccountClick: (account: Accounts) -> Unit
         item {
             Text(
                 text = stringResource(R.string.others_accounts),
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier
+                color = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier
                     .height(50.dp)
                     .wrapContentHeight(align = CenterVertically)
                     .padding(start = 16.dp, end = 16.dp),
