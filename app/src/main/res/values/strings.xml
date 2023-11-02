@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">CreditAgriTest</string>
+    <string name="cannot_redirect">Impossible de vous rediriger</string>
+    <string name="my_account">Mes Comptes</string>
+    <string name="credit_agricole">Credit Agricole</string>
+    <string name="others_accounts">Autres banques</string>
+    <string name="cannot_get_data">Impossible de recuperer les données\n</string>
 </resources>

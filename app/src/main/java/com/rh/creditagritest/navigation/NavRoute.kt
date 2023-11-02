@@ -1,4 +1,4 @@
-package com.rh.creditagritest
+package com.rh.creditagritest.navigation
 
 sealed class NavRoute(val route: String) {
     object BankList : NavRoute("BankList")

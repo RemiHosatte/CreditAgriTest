@@ -1,4 +1,4 @@
-package com.rh.creditagritest
+package com.rh.creditagritest.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,10 +24,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rh.creditagritest.MainViewModel
+import com.rh.creditagritest.Operations
+import com.rh.creditagritest.R
+import com.rh.creditagritest.getDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +59,7 @@ fun AccountScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "navigate back",
+                    contentDescription = "icon_back",
                     modifier = Modifier
                         .clickable { onNavigateBack() }
                         .fillMaxHeight()
@@ -63,7 +68,7 @@ fun AccountScreen(
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
                 Text(
-                    text = "Mes comptes",
+                    text = stringResource(id = R.string.my_account),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(start = 16.dp),

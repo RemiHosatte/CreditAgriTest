@@ -12,6 +12,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.rh.creditagritest.navigation.MyAppNavHost
+import com.rh.creditagritest.navigation.NavRoute
 import com.rh.creditagritest.ui.theme.CreditAgriTestTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,50 +30,3 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@Composable
-fun MyAppNavHost(
-    modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController(),
-    startDestination: String = NavRoute.BankList.route
-) {
-    NavHost(
-        modifier = modifier,
-        navController = navController,
-        startDestination = startDestination
-    ) {
-        composable(NavRoute.BankList.route) {
-
-            BankScreen(
-                onNavigateToAccount = {
-                    navController.navigate(NavRoute.AccountDetail.createRoute(it.id))
-                },
-            )
-
-        }
-
-        composable(
-            NavRoute.AccountDetail.route,
-            arguments = listOf(navArgument("idAccount") {
-                defaultValue = ""
-            })
-        ) { backStackEntry ->
-
-            //Get the same viewmodel as BankList
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(NavRoute.BankList.route)
-            }
-            val parentViewModel = hiltViewModel<MainViewModel>(parentEntry)
-
-            val idAccount = backStackEntry.arguments?.getString("idAccount")
-            if (!idAccount.isNullOrEmpty()) {
-                AccountScreen(idAccount, parentViewModel) {
-                    navController.navigateUp()
-                }
-            } else {
-                navController.navigateUp()
-                //Set error
-            }
-
-        }
-    }
-}

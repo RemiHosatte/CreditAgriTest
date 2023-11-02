@@ -1,4 +1,4 @@
-package com.rh.creditagritest
+package com.rh.creditagritest.ui.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,22 +27,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rh.creditagritest.Accounts
+import com.rh.creditagritest.Banks
+import com.rh.creditagritest.MainViewModel
+import com.rh.creditagritest.R
+import com.rh.creditagritest.Utils
+import com.rh.creditagritest.api.APIState
 
 @Composable
 fun BankScreen(
-    onNavigateToAccount: (account: Accounts) -> Unit,
-    viewModel: MainViewModel = hiltViewModel()
+    onNavigateToAccount: (account: Accounts) -> Unit, viewModel: MainViewModel = hiltViewModel()
 ) {
 
     val banksList = viewModel.banks.collectAsState()
@@ -50,14 +60,18 @@ fun BankScreen(
         viewModel.getBanks()
     }
 
+    val apiState by viewModel.apiState.collectAsState()
+
+    if (apiState == APIState.ERROR) {
+        Utils.showToast(LocalContext.current, stringResource(id = R.string.cannot_get_data))
+    }
     Surface(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         color = Color.LightGray,
     ) {
-        Column {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Mes Comptes",
+                text = stringResource(R.string.my_account),
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -66,8 +80,16 @@ fun BankScreen(
                 )
 
 
-
-            BankList(listBanks = banksList.value, onAccountClick = onNavigateToAccount)
+            if (apiState.equals(APIState.LOADING)) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .width(64.dp)
+                        .padding(top = 50.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            } else {
+                BankList(listBanks = banksList.value, onAccountClick = onNavigateToAccount)
+            }
         }
 
     }
@@ -94,12 +116,11 @@ fun BankList(listBanks: List<Banks>, onAccountClick: (account: Accounts) -> Unit
     //Divide list in two
     val (caBanks, otherBanks) = expandItems.partition { it.bank.isCA == 1 }
     LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
         item {
             Text(
-                text = "Credit Agricole",
+                text = stringResource(R.string.credit_agricole),
                 color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
                     .height(50.dp)
@@ -119,7 +140,7 @@ fun BankList(listBanks: List<Banks>, onAccountClick: (account: Accounts) -> Unit
 
         item {
             Text(
-                text = "Autres banques",
+                text = stringResource(R.string.others_accounts),
                 color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
                     .height(50.dp)
@@ -145,22 +166,18 @@ private fun BankItem(item: ExpandItem, onAccountClick: (account: Accounts) -> Un
 
     Column {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .clickable { item.state.value = !item.state.value }
-                .background(Color.White)
-                .padding(start = 16.dp),
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable { item.state.value = !item.state.value }
+            .background(Color.White)
+            .padding(start = 16.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = CenterVertically
 
         ) {
             Text(
-                text = item.bank.name,
-                modifier = Modifier
-                    .weight(1f),
-                fontWeight = FontWeight.Bold
+                text = item.bank.name, modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold
             )
             val sumOfAllAccounts =
                 String.format("%.2f", item.bank.accounts.sumOf { it.balance }) + " €"
@@ -177,8 +194,7 @@ private fun BankItem(item: ExpandItem, onAccountClick: (account: Accounts) -> Un
                     Icons.Default.KeyboardArrowDown
                 },
                 contentDescription = "icon_down",
-                modifier = Modifier
-                    .width(50.dp),
+                modifier = Modifier.width(50.dp),
                 tint = Color.Gray
             )
         }
@@ -188,11 +204,9 @@ private fun BankItem(item: ExpandItem, onAccountClick: (account: Accounts) -> Un
             Column {
                 //Sort by alphabet
                 if (item.state.value) {
-                    item.bank.accounts
-                        .sortedBy { it.label }
-                        .forEach { account ->
-                            AccountItem(account, onAccountClick = onAccountClick)
-                        }
+                    item.bank.accounts.sortedBy { it.label }.forEach { account ->
+                        AccountItem(account, onAccountClick = onAccountClick)
+                    }
                 }
             }
         }
@@ -202,21 +216,19 @@ private fun BankItem(item: ExpandItem, onAccountClick: (account: Accounts) -> Un
 
 @Composable
 private fun AccountItem(account: Accounts, onAccountClick: (account: Accounts) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(Color.White)
-            .clickable { onAccountClick(account) }
-            .padding(start = 16.dp, end = 16.dp),
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp)
+        .background(Color.White)
+        .clickable { onAccountClick(account) }
+        .padding(start = 16.dp, end = 16.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = CenterVertically
 
     ) {
         Text(
             text = account.label,
-            modifier = Modifier
-                .weight(1f),
+            modifier = Modifier.weight(1f),
         )
         Text(
             text = account.balance.toString() + " €",
