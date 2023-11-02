@@ -1,5 +1,6 @@
 package com.rh.creditagritest
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -169,7 +171,11 @@ private fun BankItem(item: ExpandItem, onAccountClick: (account: Accounts) -> Un
                 color = Color.Gray
             )
             Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
+                imageVector = if (item.state.value) {
+                    Icons.Default.KeyboardArrowUp
+                } else {
+                    Icons.Default.KeyboardArrowDown
+                },
                 contentDescription = "icon_down",
                 modifier = Modifier
                     .width(50.dp),
@@ -177,10 +183,19 @@ private fun BankItem(item: ExpandItem, onAccountClick: (account: Accounts) -> Un
             )
         }
         Divider(height = 2.dp)
-        if (item.state.value)
-            item.bank.accounts.forEach { account ->
-                AccountItem(account, onAccountClick = onAccountClick)
+
+        AnimatedVisibility(visible = item.state.value) {
+            Column {
+                //Sort by alphabet
+                if (item.state.value) {
+                    item.bank.accounts
+                        .sortedBy { it.label }
+                        .forEach { account ->
+                            AccountItem(account, onAccountClick = onAccountClick)
+                        }
+                }
             }
+        }
     }
 }
 

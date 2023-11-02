@@ -21,7 +21,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             CreditAgriTestTheme {
-                // A surface container using the 'background' color from the theme
                 MyAppNavHost()
             }
         }
@@ -76,11 +75,3 @@ fun MyAppNavHost(
         }
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    CreditAgriTestTheme {
-//    }
-//}
