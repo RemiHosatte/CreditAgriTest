@@ -3,14 +3,15 @@ package com.rh.creditagritest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.rh.creditagritest.ui.theme.CreditAgriTestTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,25 +22,60 @@ class MainActivity : ComponentActivity() {
         setContent {
             CreditAgriTestTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    FirstScreen()
-                }
+                MyAppNavHost()
             }
         }
     }
 }
 
 
-
-
 @Composable
-fun FirstScreen(viewModel: MainViewModel = hiltViewModel()){
+fun MyAppNavHost(
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController(),
+    startDestination: String = NavRoute.BankList.route
+) {
+    NavHost(
+        modifier = modifier,
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        composable(NavRoute.BankList.route) {
 
+            BankScreen(
+                onNavigateToAccount = {
+                    navController.navigate(NavRoute.AccountDetail.createRoute(it.id))
+                },
+            )
 
+        }
+
+        composable(
+            NavRoute.AccountDetail.route,
+            arguments = listOf(navArgument("idAccount") {
+                defaultValue = ""
+            })
+        ) { backStackEntry ->
+
+            //Get the same viewmodel as BankList
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(NavRoute.BankList.route)
+            }
+            val parentViewModel = hiltViewModel<MainViewModel>(parentEntry)
+
+            val idAccount = backStackEntry.arguments?.getString("idAccount")
+            if (!idAccount.isNullOrEmpty()) {
+                AccountScreen(idAccount, parentViewModel)
+            } else {
+                navController.navigateUp()
+                //Set error
+            }
+
+        }
+    }
 }
+
+
 //@Preview(showBackground = true)
 //@Composable
 //fun GreetingPreview() {
